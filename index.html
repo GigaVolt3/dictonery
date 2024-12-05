@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dictionary Lookup</title>
+  <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-image: url('pngtree-open-book-icon-vector-illustration-clipart-design-png-image_6640266.png');
+        background-size: contain; 
+        background-position: center center; 
+        background-repeat: no-repeat; 
+        background-attachment: fixed;
+        padding: 40px; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        }
+
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 8px;
+      display: block;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      transition: border 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border: 1px solid #007BFF;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #suggestions {
+      border: 1px solid #ccc;
+      background-color: #fff;
+      max-height: 150px;
+      overflow-y: auto;
+      display: none;
+      margin-top: 10px;
+      border-radius: 6px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #suggestions div {
+      padding: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #333;
+      transition: background-color 0.3s ease;
+    }
+    #suggestions div:hover {
+      background-color: #f1f1f1;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+    #result strong {
+      font-size: 18px;
+      color: #007BFF;
+    }
+    .result-description {
+      font-size: 16px;
+      color: #555;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Dictionary Lookup</h1>
+    <label for="word">Enter a word:</label>
+    <input type="text" id="word" placeholder="Type a word" oninput="showSuggestions()">
+    <button onclick="findMeaning()">Find Meaning</button>
+
+    <div id="suggestions"></div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    let dictionary = [];
+
+    // Load the dictionary data from the JSON file
+    fetch('EDMTDictionary.json')
+      .then(response => response.json())
+      .then(data => {
+        dictionary = data;
+      })
+      .catch(error => {
+        console.error('Error loading the dictionary:', error);
+        alert('Failed to load the dictionary data.');
+      });
+
+    // Function to find the meaning of the word
+    function findMeaning() {
+      const inputWord = document.getElementById("word").value.toLowerCase().trim();
+      const resultDiv = document.getElementById("result");
+
+      // Search for the word in the dictionary
+      const wordEntry = dictionary.find(entry => entry.word.toLowerCase() === inputWord);
+
+      if (wordEntry) {
+        resultDiv.innerHTML = `
+          <strong>Word:</strong> ${wordEntry.word} <br>
+          <strong>Type:</strong> ${wordEntry.type} <br>
+          <div class="result-description">
+            <strong>Description:</strong> ${wordEntry.description}
+          </div>
+        `;
+      } else {
+        resultDiv.innerHTML = `Sorry, the word "${inputWord}" is not in the dictionary.`;
+      }
+
+      // Hide suggestions after a word is selected
+      document.getElementById("suggestions").style.display = 'none';
+    }
+
+    // Function to show suggestions based on input
+    function showSuggestions() {
+      const inputWord = document.getElementById("word").value.toLowerCase().trim();
+      const suggestionsDiv = document.getElementById("suggestions");
+
+      // Filter dictionary to find words similar to the input word
+      const suggestions = dictionary.filter(entry => entry.word.toLowerCase().includes(inputWord));
+
+      if (inputWord.length > 0 && suggestions.length > 0) {
+        suggestionsDiv.innerHTML = ''; // Clear any previous suggestions
+        suggestionsDiv.style.display = 'block'; // Show the suggestion box
+
+        // Create a suggestion list
+        suggestions.forEach(entry => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.innerText = entry.word;
+          suggestionItem.onclick = () => selectSuggestion(entry.word); // Select word from suggestion
+          suggestionsDiv.appendChild(suggestionItem);
+        });
+      } else {
+        suggestionsDiv.style.display = 'none'; // Hide if no suggestions
+      }
+    }
+
+    // Function to select a suggestion
+    function selectSuggestion(word) {
+      document.getElementById("word").value = word; // Set the input field to the selected word
+      findMeaning(); // Show the meaning of the selected word
+      document.getElementById("suggestions").style.display = 'none'; // Hide suggestions
+    }
+  </script>
+
+</body>
+</html>
