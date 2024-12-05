@@ -121,7 +121,7 @@
   <script>
     let dictionary = [];
 
-    // Load the dictionary data from the JSON file
+
     fetch('EDMTDictionary.json')
       .then(response => response.json())
       .then(data => {
@@ -132,12 +132,12 @@
         alert('Failed to load the dictionary data.');
       });
 
-    // Function to find the meaning of the word
+
     function findMeaning() {
       const inputWord = document.getElementById("word").value.toLowerCase().trim();
       const resultDiv = document.getElementById("result");
 
-      // Search for the word in the dictionary
+
       const wordEntry = dictionary.find(entry => entry.word.toLowerCase() === inputWord);
 
       if (wordEntry) {
@@ -152,39 +152,39 @@
         resultDiv.innerHTML = `Sorry, the word "${inputWord}" is not in the dictionary.`;
       }
 
-      // Hide suggestions after a word is selected
+
       document.getElementById("suggestions").style.display = 'none';
     }
 
-    // Function to show suggestions based on input
+
     function showSuggestions() {
       const inputWord = document.getElementById("word").value.toLowerCase().trim();
       const suggestionsDiv = document.getElementById("suggestions");
 
-      // Filter dictionary to find words similar to the input word
+
       const suggestions = dictionary.filter(entry => entry.word.toLowerCase().includes(inputWord));
 
       if (inputWord.length > 0 && suggestions.length > 0) {
-        suggestionsDiv.innerHTML = ''; // Clear any previous suggestions
-        suggestionsDiv.style.display = 'block'; // Show the suggestion box
+        suggestionsDiv.innerHTML = '';
+        suggestionsDiv.style.display = 'block'; 
 
-        // Create a suggestion list
+
         suggestions.forEach(entry => {
           const suggestionItem = document.createElement('div');
           suggestionItem.innerText = entry.word;
-          suggestionItem.onclick = () => selectSuggestion(entry.word); // Select word from suggestion
+          suggestionItem.onclick = () => selectSuggestion(entry.word); 
           suggestionsDiv.appendChild(suggestionItem);
         });
       } else {
-        suggestionsDiv.style.display = 'none'; // Hide if no suggestions
+        suggestionsDiv.style.display = 'none'; 
       }
     }
 
-    // Function to select a suggestion
+
     function selectSuggestion(word) {
-      document.getElementById("word").value = word; // Set the input field to the selected word
-      findMeaning(); // Show the meaning of the selected word
-      document.getElementById("suggestions").style.display = 'none'; // Hide suggestions
+      document.getElementById("word").value = word; 
+      findMeaning(); 
+      document.getElementById("suggestions").style.display = 'none';
     }
   </script>
 
